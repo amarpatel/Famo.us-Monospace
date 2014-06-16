@@ -32,13 +32,13 @@ define(function(require, exports, module) {
     }
 
     function _createParentCube () {
-        var cube = new CubeView();
+        this.cube = new CubeView();
 
-        for (var j=0;j<cube.surfaces.length;j++) {
-            cube.surfaces[j].setProperties({pointerEvents: 'none'});
+        for (var j=0;j<this.cube.surfaces.length;j++) {
+            this.cube.surfaces[j].setProperties({pointerEvents: 'none'});
         }
 
-        this.node.add(cube);
+        this.node.add(this.cube);
     }
 
     function _createBackground () {
@@ -64,12 +64,43 @@ define(function(require, exports, module) {
     function _setBackgroundListeners () {
         var ParentCubeSync = new MouseSync();
 
+        this.startMouseData = undefined;
+        this.endMouseData = undefined;
+
         this.backgroundSurface.pipe(ParentCubeSync);
 
-        ParentCubeSync.on('update', function (data) {
-            this.position[0] += data.delta[0];
-            this.position[1] -= data.delta[1];
+        ParentCubeSync.on('start', function (data) {
+            this.startMouseData = data;
+            // this.position[0] += data.delta[0];
+            // this.position[1] -= data.delta[1];
         }.bind(this));
+
+        ParentCubeSync.on('end', function (data) {
+            this.endMouseData = data;
+            // console.log(data.clientY);
+            _identifyRotateDirection.call(this);
+        }.bind(this));
+    }
+
+    function _identifyRotateDirection () {
+        var xDelta = this.endMouseData.clientX - this.startMouseData.clientX;
+        var yDelta = this.endMouseData.clientY - this.startMouseData.clientY;
+
+        // vertical 
+        if (Math.abs(xDelta) < Math.abs(yDelta)) {
+            if (yDelta > 0) {
+                
+            } else {
+
+            }
+        // horizontal
+        } else {
+            if (xDelta > 0) {
+
+            } else {
+                
+            }
+        }
     }
 
     module.exports = RotatingCube;
