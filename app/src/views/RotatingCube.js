@@ -32,13 +32,13 @@ define(function(require, exports, module) {
     }
 
     function _createParentCube () {
-        this.cube = new CubeView();
+        var cube = new CubeView();
 
-        for (var j=0;j<this.cube.surfaces.length;j++) {
-            this.cube.surfaces[j].setProperties({pointerEvents: 'none'});
+        for (var j=0;j<cube.surfaces.length;j++) {
+            cube.surfaces[j].setProperties({pointerEvents: 'none'});
         }
 
-        this.node.add(this.cube);
+        this.node.add(cube);
     }
 
     function _createBackground () {
