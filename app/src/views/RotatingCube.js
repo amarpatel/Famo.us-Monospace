@@ -88,6 +88,7 @@ define(function(require, exports, module) {
 
         // vertical 
         if (Math.abs(xDelta) < Math.abs(yDelta)) {
+            
             if (yDelta > 0) {
                 
             } else {
