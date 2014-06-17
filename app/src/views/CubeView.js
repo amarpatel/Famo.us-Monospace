@@ -51,12 +51,16 @@ define(function(require, exports, module) {
         [-Math.PI/2, 0, 0]// top
       ];
 
+      var sideNames = [
+        'Z', '-Z', 'X', '-X', 'Y', '-Y'
+      ];
+
       for (var i=0;i<6;i++) {
 
         // create initial cube surfaces
         var surface = new Surface({
           size: [this.options.size*2, this.options.size*2],
-          content: '<p>F</p>',
+          content: '<h1>' + sideNames[i] + '<h1>',
           properties: {
             textAlign: 'center',
             webkitBackfaceVisibility: 'visible',

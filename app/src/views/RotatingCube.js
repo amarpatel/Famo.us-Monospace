@@ -5,14 +5,20 @@ define(function(require, exports, module) {
     var Modifier       = require('famous/core/Modifier');
     var StateModifier  = require('famous/modifiers/StateModifier');
     var MouseSync      = require('famous/inputs/MouseSync');
+    var Transitionable      = require('famous/transitions/Transitionable');
 
     var CubeView = require('views/CubeView');
     var DestroyerCube = require('views/DestroyerCube');
 
+    var transitionable = new Transitionable(0);
+
     function RotatingCube() {
         View.apply(this, arguments);
 
-        this.position = [0, 0];
+        this.yTracker = 0;
+
+        this.position = [0, 0, 0];
+        this.endMouseData = undefined;
         
         _createRotateModifier.call(this);
         _createBackground.call(this);
@@ -52,6 +58,13 @@ define(function(require, exports, module) {
     function _createRotateModifier () {
         var self = this;
         var rotateModifier = new Modifier({
+            // transform: function () {
+            //     var trans = Transform.multiply(
+            //         Transform.rotate(self.position[1]/100, self.position[0]/100, 0),
+            //         Transform.rotate([self.position[0] * Math.PI, self.position[0] * Math.PI, self.position[0] * Math.PI])
+            //         );
+            //     return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
+            // }
             transform: function () {
                 var trans = Transform.rotate(self.position[1]/100, self.position[0]/100, 0);
                 return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
@@ -64,42 +77,54 @@ define(function(require, exports, module) {
     function _setBackgroundListeners () {
         var ParentCubeSync = new MouseSync();
 
-        this.startMouseData = undefined;
-        this.endMouseData = undefined;
-
         this.backgroundSurface.pipe(ParentCubeSync);
-
-        ParentCubeSync.on('start', function (data) {
-            this.startMouseData = data;
-            // this.position[0] += data.delta[0];
-            // this.position[1] -= data.delta[1];
-        }.bind(this));
 
         ParentCubeSync.on('end', function (data) {
             this.endMouseData = data;
-            // console.log(data.clientY);
             _identifyRotateDirection.call(this);
         }.bind(this));
     }
 
     function _identifyRotateDirection () {
-        var xDelta = this.endMouseData.clientX - this.startMouseData.clientX;
-        var yDelta = this.endMouseData.clientY - this.startMouseData.clientY;
+        var xDelta = this.endMouseData.delta[0];
+        var yDelta = this.endMouseData.delta[1];
+
 
         // vertical 
         if (Math.abs(xDelta) < Math.abs(yDelta)) {
-            
             if (yDelta > 0) {
-                
+                this.yTracker--;
+                if (this.yTracker === -5 || this.yTracker === -1) {
+                    if (this.yTracker === -5) this.yTracker = -1;
+                    console.log('neg y!');
+                    this.position[1] -= Math.PI * 50;
+                } else if (this.yTracker === 3) {
+                    console.log('neg y!');
+                    this.position[1] -= Math.PI * 50;
+                } else {
+                    this.position[1] -= Math.PI * 50;
+                }
+                console.log('neg: ', this.yTracker);
             } else {
-
+                this.yTracker++;
+                if (this.yTracker === 5 || this.yTracker === 1) {
+                    if (this.yTracker === 5) this.yTracker = 1;
+                    console.log('pos y!');
+                    this.position[1] += Math.PI * 50;
+                } else if (this.yTracker === -3) {
+                    console.log('pos y!');
+                    this.position[1] -= Math.PI * 50;
+                } else {
+                    this.position[1] += Math.PI * 50;
+                }
+                console.log('pos: ', this.yTracker);
             }
         // horizontal
         } else {
             if (xDelta > 0) {
-
+                this.position[0] += Math.PI * 50;
             } else {
-                
+                this.position[0] -= Math.PI * 50;
             }
         }
     }
