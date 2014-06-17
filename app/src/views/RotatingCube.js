@@ -35,8 +35,11 @@ define(function(require, exports, module) {
     var down = 0;
 
     var transitionable = new Transitionable(0);
+
     var quaternion = new Quaternion(1, 0, 0, 0);
-    var quaternionUpdate = new Quaternion(1, 0, 1, 0);
+    var quaternionUpdate = new Quaternion(1, 0, 0, 0);
+
+
 
     sync.on('update', function (data) {
       delta[0] += data.delta[0];
@@ -44,7 +47,6 @@ define(function(require, exports, module) {
     });
 
     sync.on('end', function () {
-      console.log()
       if (Math.abs(delta[0]) > Math.abs(delta[1])){
         left = delta[0] > 0 ? -1 : 1;
         // index[0] = delta[0] > 0 ? 1 : -1; 
@@ -62,64 +64,62 @@ define(function(require, exports, module) {
       console.log('nVec: ', nVec);
       console.log('delta', delta);
     });
-
-    // var rotationModifier = new Modifier({
-    //   transform: function () {
-    //     var rotateAng = transitionable.get();
-    //     if (rotateAng  > .99999){
+/*
+    var rotationModifier = new Modifier({
+      transform: function () {
+        var rotateAng = transitionable.get();
+        if (rotateAng  > .99999){
           
-    //       transitionable.reset(0);
-    //       transitionable.halt();
-    //       console.log('position: ', position);
-    //     }
+          transitionable.reset(0);
+          transitionable.halt();
+          console.log('position: ', position);
+        }
 
-    //     var trans = quaternion.getTransform();
+        var trans = quaternion.getTransform();
  
-    //     return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
-    //   }
-    // });
+        return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
+      }
+    });
+*/
 
     var rotationModifier = new Modifier({
         origin: [0.5, 0.5]
     });
 
+
     // Bind the box's rotation to the quaternion
     rotationModifier.transformFrom(function() {
-      quaternionUpdate = quaternionUpdate.multiply(quaternion);
 
-      var trans = quaternionUpdate.getTransform();
+        return quaternion.getTransform();
 
-      var trans = quaternionUpdate.slerp(quaternion.getTransform(), 0.5);
-
-
+      // quaternionUpdate = quaternion.multiply(quaternionUpdate);
+      // quaternionUpdate = quaternionUpdate.multiply(quaternion);
+      // var trans = quaternionUpdate.getTransform();
+      // var trans = quaternionUpdate.slerp(quaternion.getTransform(), 0.5);
+      // return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
       // return trans;
-      return Transform.aboutOrigin([window.innerWidth/2, window.innerHeight/2, 0], trans);
     });
+
+
+
+
+    backgroundSurface.on('click', function () {
+        quaternion = quaternion.multiply(quaternionUpdate);
+    })
+
+
+
+
     var mainCube = new CubeView();
     var node = this.add(rotationModifier).add(mainCube);
-
-    var smallCube = new CubeView({ size: 25 });
-
-    var smallCubeModifier = new Modifier({
-      transform: Transform.translate(75, 75, 75)
-    });
-
-    smallCube.pipe(sync);
-    
-    node.add(smallCubeModifier).add(smallCube);
-
-    // var mainCubeModifier = new Modifier({
-    //   origin: [0.5, 0.5],
-    //   align: [0.5, 0.5]
-    // });
 
         this.position = [0, 0];
         
         _createRotateModifier.call(this);
-        _createBackground.call(this);
-        _setBackgroundListeners.call(this);
-        _createParentCube.call(this);
-        _createDestroyerCube.call(this);
+        // _createBackground.call(this);
+        // _setBackgroundListeners.call(this);
+        // _createParentCube.call(this);
+        // _createDestroyerCube.call(this);
     }
 
     RotatingCube.prototype = Object.create(View.prototype);

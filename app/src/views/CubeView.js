@@ -12,6 +12,13 @@ define(function(require, exports, module) {
         // needed to add surface listeners from ancestor view
         this.surfaces = [];
 
+        this.rootModifier = new Modifier({
+          size: [this.options.size, this.options.size],
+          transform: Transform.translate([this.options.size/2, this.options.size/2, this.options.size/2])
+        });
+
+        this.add(this.rootModifier);
+
         this.matrix = [];
         this.surfaceTranslations = undefined;
         this.surfaceRotations = undefined;
